@@ -94,7 +94,7 @@ fr:
         title: Bannière de maintenance
         display: Définir
         clear: Effacer
-        time: "Exemple : Mise à jour prévue le 13 décembre à 23:00. Les utilisateurs peuvent rencontrer des problèmes pour se connecter."
+        time: "Exemple : Mise à jour prévue le 13 décembre à 23:00. Les utilisateurs peuvent rencontrer des problèmes pour se connecter."        
       preupload:
         info: Les utilisateurs peuvent précharger une présentation qui sera utilisée comme présentation par défaut pour cette salle spécifique
         title: Permettre aux utilisateurs de précharger des présentations
@@ -480,6 +480,7 @@ fr:
     twitter: Twitter
     ldap: LDAP
     openid_connect: OpenID Connect
+    cas: ENT
   recaptcha:
     errors:
       recaptcha_unreachable: "Oups, nous n'avons pas réussi à valider votre réponse reCAPTCHA. Veuillez réessayer."
@@ -487,7 +488,7 @@ fr:
   recording:
     all_recordings: Tous les enregistrements
     email: Envoyer l'enregistrement par courriel
-    error: "Il y a eu une erreur lors de la récupération de %{count}  enregistrement(s)"
+    error: "Il y a eu une erreur lors de la récupération de %{count} enregistrement(s)"
     no_recordings: "Ce salon n'a pas d'enregistrement %{inject}."
     no_user_recordings: "Actuellement, vous n'avez  aucun enregistrement."
     no_matched_recordings: "Aucun enregistrement %{inject} ne correspond à votre recherche."
@@ -552,7 +553,7 @@ fr:
       fail: "Erreur lors de la suppression de la salle (%{error})"
     enter_the_access_code: Veuillez introduire le code d'accès de la salle
     invalid_provider: Vous avez introduit une url non valide. Veuillez vérifier l'url et essayez à nouveau.
-    invitation_description: "Vous avez été invité à rejoindre 1%{name} en utilisant le BigBlueButton. Pour le faire, cliquez sur le lien ci-dessus et saisissez votre nom."
+    invitation_description: "Vous avez été invité à rejoindre 1%{name} en utilisant le BigBlueButton. Pour le faire, cliquez sur le lien ci-dessus et saisissez votre nom."  
     invited: Vous avez été invité à rejoindre
     recording_present: Je reconnais que cette session va être enregistrée. Cela peut inclure ma voix et la vidéo si elle est activée.
     invite_participants: Inviter des participants
