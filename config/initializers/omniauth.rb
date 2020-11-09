@@ -61,7 +61,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
 
       provider :office365, ENV['OFFICE365_KEY'], ENV['OFFICE365_SECRET'],
       redirect_uri: redirect,
-        setup: SETUP_PROC
+      setup: SETUP_PROC
     end
     if Rails.configuration.omniauth_openid_connect
       Rails.application.config.providers << :openid_connect
