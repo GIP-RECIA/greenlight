@@ -19,6 +19,7 @@ Rails.application.config.omniauth_office365 = ENV['OFFICE365_KEY'].present? &&
 Rails.application.config.omniauth_openid_connect = ENV['OPENID_CONNECT_CLIENT_ID'].present? &&
                                                    ENV['OPENID_CONNECT_CLIENT_SECRET'].present? &&
                                                    ENV['OPENID_CONNECT_ISSUER'].present?
+Rails.application.config.omniauth_cas = ENV['CAS_URL'].present?
 
 SETUP_PROC = lambda do |env|
   OmniauthOptions.omniauth_options env
@@ -79,6 +80,19 @@ Rails.application.config.middleware.use OmniAuth::Builder do
           redirect_uri: redirect
         },
         setup: SETUP_PROC
+    end
+    if Rails.configuration.omniauth_cas
+      Rails.application.config.providers << :cas
+
+      provider :cas,
+        url: ENV['CAS_URL'],
+        service_validate_url: '/serviceValidate',
+        name_key: ENV['CAS_USER_ATTRIBUTE_NAME'],
+        email_key: ENV['CAS_USER_ATTRIBUTE_MAIL'],
+        nickname_key: ENV['CAS_USER_ATTRIBUTE_NICKNAME'],
+        first_name_key: ENV['CAS_USER_ATTRIBUTE_FIRSTNAME'],
+        last_name_key: ENV['CAS_USER_ATTRIBUTE_LASTNAME'],
+        image_key: ENV['CAS_USER_ATTRIBUTE_IMAGE']
     end
   end
 end
