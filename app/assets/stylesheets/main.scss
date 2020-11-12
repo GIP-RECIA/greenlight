@@ -151,6 +151,17 @@
   .customBtn-image {
     background: #ffffff image-url("ldap-logo.png") no-repeat left top;
     background-size: 18px 18px;
+    padding: 10px 10px 10px 10px;
+  }
+}
+
+.customBtn-cas3 {
+  @extend .customBtn;
+  background: #25b2f3;
+
+  .customBtn-image {
+    background: #ffffff image-url("cas_logo.png") no-repeat left top;
+    background-size: 18px 18px;
     padding:10px 10px 10px 10px;
   }
 }
