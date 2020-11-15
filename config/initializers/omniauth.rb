@@ -60,7 +60,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
       redirect = ENV['OAUTH2_REDIRECT'].present? ? File.join(ENV['OAUTH2_REDIRECT'], "auth", "office365", "callback") : nil
 
       provider :office365, ENV['OFFICE365_KEY'], ENV['OFFICE365_SECRET'],
-        redirect_uri: redirect,
+      redirect_uri: redirect,
         setup: SETUP_PROC
     end
     if Rails.configuration.omniauth_openid_connect
@@ -82,6 +82,18 @@ Rails.application.config.middleware.use OmniAuth::Builder do
         setup: SETUP_PROC
     end
     if Rails.configuration.omniauth_cas
+      if ENV['CAS_ROLE_FIELDS'].present?
+        # for example HTTP_AFFILIATION:HTTP_HTTP_SHIB_ORGPERSON_ORGUNITNUMBER
+        role_fields = ENV['CAS_ROLE_FIELDS'].split(':')
+      else
+        role_fields = []
+      end
+      # save for later use in SessionController
+      Rails.application.config.omniauth_cas_role_fields = role_fields
+
+      Rails.application.config.omniauth_cas_role_admin_regex = ENV['CAS_USER_ROLE_ADMIN_REGEX']
+      Rails.application.config.omniauth_cas_auth_filter_regex = ENV['CAS_USER_AUTH_FILTER_REGEX']
+      Rails.application.config.omniauth_cas_auth_filter_attribute = ENV['CAS_USER_AUTH_FILTER_ATTRIBUTE']
       Rails.application.config.providers << :cas
 
       provider :cas,
@@ -92,7 +104,9 @@ Rails.application.config.middleware.use OmniAuth::Builder do
         nickname_key: ENV['CAS_USER_ATTRIBUTE_NICKNAME'],
         first_name_key: ENV['CAS_USER_ATTRIBUTE_FIRSTNAME'],
         last_name_key: ENV['CAS_USER_ATTRIBUTE_LASTNAME'],
-        image_key: ENV['CAS_USER_ATTRIBUTE_IMAGE']
+        image_key: ENV['CAS_USER_ATTRIBUTE_IMAGE'],
+        merge_multivalued_attributes: true,
+        extra_fields: role_fields
     end
   end
 end
