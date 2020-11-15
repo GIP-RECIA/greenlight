@@ -16,6 +16,7 @@ Rails.application.config.omniauth_twitter = ENV['TWITTER_ID'].present? && ENV['T
 Rails.application.config.omniauth_google = ENV['GOOGLE_OAUTH2_ID'].present? && ENV['GOOGLE_OAUTH2_SECRET'].present?
 Rails.application.config.omniauth_office365 = ENV['OFFICE365_KEY'].present? &&
                                               ENV['OFFICE365_SECRET'].present?
+Rails.application.config.omniauth_cas = ENV['CAS_URL'].present?
 
 SETUP_PROC = lambda do |env|
   OmniauthOptions.omniauth_options env
@@ -58,6 +59,19 @@ Rails.application.config.middleware.use OmniAuth::Builder do
       provider :office365, ENV['OFFICE365_KEY'], ENV['OFFICE365_SECRET'],
       redirect_uri: redirect,
       setup: SETUP_PROC
+    end
+    if Rails.configuration.omniauth_cas
+      Rails.application.config.providers << :cas
+
+      provider :cas,
+        url: ENV['CAS_URL'],
+        service_validate_url: '/serviceValidate',
+        name_key: ENV['CAS_USER_ATTRIBUTE_NAME'],
+        email_key: ENV['CAS_USER_ATTRIBUTE_MAIL'],
+        nickname_key: ENV['CAS_USER_ATTRIBUTE_NICKNAME'],
+        first_name_key: ENV['CAS_USER_ATTRIBUTE_FIRSTNAME'],
+        last_name_key: ENV['CAS_USER_ATTRIBUTE_LASTNAME'],
+        image_key: ENV['CAS_USER_ATTRIBUTE_IMAGE']
     end
   end
 end
