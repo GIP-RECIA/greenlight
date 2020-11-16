@@ -140,13 +140,13 @@ module Greenlight
     config.branding_image_default = "https://raw.githubusercontent.com/bigbluebutton/greenlight/master/app/assets/images/logo_with_text.png"
 
     # Default primary color if the user does not specify one
-    config.primary_color_default = "#467fcf"
+    config.primary_color_default = "#25b2f3"
 
     # Default primary color lighten if the user does not specify one
-    config.primary_color_lighten_default = "#e8eff9"
+    config.primary_color_lighten_default = "#e6f6fe"
 
     # Default primary color darken if the user does not specify one
-    config.primary_color_darken_default = "#316cbe"
+    config.primary_color_darken_default = "#0c98d9"
 
     # Default registration method if the user does not specify one
     config.registration_method_default = if ENV["DEFAULT_REGISTRATION"] == "invite"
