@@ -185,6 +185,27 @@ class SessionsController < ApplicationController
     User.deleted.exists?(social_uid: @auth['uid'], provider: current_provider)
   end
 
+  def check_user_auth_autorized
+    logger.info "Check Auth Autorized with provider '#{@auth['provider']}'"
+    attribute_filter = Rails.application.config.omniauth_cas_auth_filter_attribute
+    auth_filter_pattern = Rails.application.config.omniauth_cas_auth_filter_regex
+
+    if @auth['provider'].to_s == "cas" && auth_filter_pattern.present? && attribute_filter.present?
+      logger.debug "CAS info: #{@auth.info}"
+      logger.debug "CAS extra: #{@auth.extra}"
+
+      logger.debug "CAS filter field: #{attribute_filter} with values: #{@auth.extra[attribute_filter]}"
+      @auth.extra[attribute_filter].each{|attribute_value|
+        logger.debug "CAS attribute value: #{attribute_value}"
+        return true if attribute_value =~ Regexp.new(auth_filter_pattern)
+      }
+      logger.info "Check auth user not authorized to connect"
+      return false
+    end
+    logger.info "Check auth is not CAS"
+    return true
+  end
+
   def current_provider
     @auth['provider'] == "bn_launcher" ? @auth['info']['customer'] : @auth['provider']
   end
@@ -207,6 +228,9 @@ class SessionsController < ApplicationController
     # Check if user is deleted
     return redirect_to root_path, flash: { alert: I18n.t("registration.banned.fail") } if check_auth_deleted
 
+    # if user is autorized
+    return redirect_to root_path, flash: { alert: I18n.t("errors.unauthorized.message") } unless check_user_auth_autorized
+
     # If using invitation registration method, make sure user is invited
     return redirect_to root_path, flash: { alert: I18n.t("registration.invite.no_invite") } unless passes_invite_reqs
 
@@ -216,6 +240,39 @@ class SessionsController < ApplicationController
     user = User.from_omniauth(@auth)
 
     logger.info "Support: Auth user #{user.email} is attempting to login."
+    logger.info "Support: Auth provider '#{@auth['provider']}'"
+
+    if @auth['provider'].to_s == "cas"
+      logger.debug "CAS info: #{@auth.info}"
+      logger.debug "CAS extra: #{@auth.extra}"
+
+      admin_regex = Rails.application.config.omniauth_cas_role_admin_regex
+
+      logger.debug "CAS admin regex: #{admin_regex}"
+
+      if admin_regex.present?
+        is_admin = false
+        logger.debug "CAS admin regex: present"
+        Rails.application.config.omniauth_cas_role_fields.each{|field|
+          field_values = @auth.extra[field]
+          logger.debug "CAS looking for role for field: #{field}} on value  #{field_values}"
+          field_values.each{|attribute_value|
+            # never assign reserved roles
+            logger.debug "CAS attribute value to test role: #{attribute_value}"
+            if attribute_value =~ Regexp.new(admin_regex)
+              logger.debug "CAS admin regex OK on #{attribute_value}"
+              is_admin = true
+              break
+            end
+          }
+          if is_admin
+            logger.debug "CAS admin set user role admin"
+            user.set_role :admin
+            break
+          end
+        }
+      end
+    end
 
     # Add pending role if approval method and is a new user
     if approval_registration && !@user_exists
